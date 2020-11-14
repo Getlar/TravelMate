@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MobilProjekt</string>
+    <string name="facebook_app_id">974712713055625</string>
+    <string name="fb_login_protocol_scheme">fb974712713055625</string>
+</resources>
