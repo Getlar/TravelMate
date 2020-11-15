@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.facebook.AccessTokenTracker;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,6 +18,8 @@ public class MainMenu extends AppCompatActivity {
 
     Button logout;
     TextView name;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private AccessTokenTracker accessTokenTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +27,7 @@ public class MainMenu extends AppCompatActivity {
         setContentView(R.layout.activity_main_menu);
         name = findViewById(R.id.googleName);
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
+
         if(signInAccount !=null){
             name.setText(signInAccount.getDisplayName());
         }
