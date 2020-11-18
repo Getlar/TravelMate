@@ -4,21 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/facebookLoginButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginStart="109dp"
-        android:layout_marginTop="326dp"
-        android:layout_marginEnd="109dp"
-        android:layout_marginBottom="376dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    tools:context=".LoginActivity">
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/googleSignInButton"
@@ -28,7 +14,6 @@
         android:layout_marginTop="244dp"
         android:layout_marginEnd="162dp"
         android:layout_marginBottom="34dp"
-        app:layout_constraintBottom_toTopOf="@+id/login_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

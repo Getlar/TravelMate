@@ -3,4 +3,5 @@
     <string name="facebook_app_id">974712713055625</string>
     <string name="fb_login_protocol_scheme">fb974712713055625</string>
     <string name="google_maps_api_key">AIzaSyAOwoLMEDr33Ap6MZLLyiBtnUiJ7rh0isc</string>
+    <string name="enter_address_city_or_zip_code">Enter Address, City or Zip Code</string>
 </resources>
