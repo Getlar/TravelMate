@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat;
 
 import com.example.mobilprojekt.adapters.CustomWindowAdapter;
 import com.example.mobilprojekt.models.PlaceInfo;
-import com.example.mobilprojekt.models.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.ConnectionResult;
@@ -30,13 +29,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPhotoResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -87,7 +86,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     //Google Maps and Places
     private GoogleMap mMap;
     private Boolean mLocationPermissionsGranted = false;
-    private final PlaceInfo mPlace = new PlaceInfo();
+    private PlaceInfo mPlace;
     private Marker mMarker;
 
     //Sensor Variables
@@ -111,8 +110,21 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
 
         //Disable NavBar
         View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN;
+        int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
+        decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int i) {
+                if((i & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                    decorView.setSystemUiVisibility(uiOptions);
+                }
+            }
+        });
 
         //Instantiate Widgets
         mGPS = (ImageView) findViewById(R.id.ic_gps);
@@ -199,6 +211,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick (mGPS) : Clicked gps icon");
+                Toast.makeText(MapActivity.this, "Going to your location", Toast.LENGTH_SHORT).show();
                 getDeviceLocation();
             }
         });
@@ -206,6 +219,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick (mInfo) : Clicked info icon");
+                Toast.makeText(MapActivity.this, "Showing Information", Toast.LENGTH_SHORT).show();
                 try{
                     if(mMarker.isInfoWindowShown()){
                         mMarker.hideInfoWindow();
@@ -225,12 +239,12 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                     db.collection("Users").document(Objects.requireNonNull(signInAccount.getEmail())).collection("Places").document(mPlace.getName()).set(mPlace).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Toast.makeText(getApplicationContext(), "User with email: " + signInAccount.getEmail() +" added", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MapActivity.this, "Location Added", Toast.LENGTH_SHORT).show();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getApplicationContext(), "User with email: " + signInAccount.getEmail() +" not added", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MapActivity.this, "Error Adding Location", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -239,17 +253,19 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "onClick: Going back to Main Menu");
+                Toast.makeText(MapActivity.this, "Going Back To Main Menu", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MapActivity.this, MenuActivity.class);
                 startActivity(intent);
             }
         });
-
+        Log.d(TAG, "initMap: InitMap Complete");
         //Setup Search Environment
         setUpAutocomplete();
     }
 
     private void getDeviceLocation(){
-        Log.d(TAG, "getDeviceLocation()");
+        Log.d(TAG, "getDeviceLocation(): Getting actual location of device");
         FusedLocationProviderClient mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         try{
             if(mLocationPermissionsGranted){
@@ -263,7 +279,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),DEFAULT_ZOOM, "My Location");
                         }else{
                             Log.d(TAG, "Location is null");
-                            Toast.makeText(MapActivity.this, "unable to get location",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MapActivity.this, "Unable to get location",Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -281,8 +297,9 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
             Log.d(TAG, "isServicesOK: Google Play Services is working");
             return true;
         }else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
-            Log.d(TAG, "isServicesOK: an error occured but we can fix it");
+            Log.d(TAG, "isServicesOK: an error occurred but we can fix it");
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MapActivity.this, available, ERROR_DIALOG_REQUEST);
+            assert dialog != null;
             dialog.show();
         }else{
             Toast.makeText(this, "You cant make map requests", Toast.LENGTH_SHORT).show();
@@ -292,6 +309,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
 
     //Set up Autocomplete Fragment and listen for Change
     private void setUpAutocomplete(){
+        Log.d(TAG, "setUpAutocomplete: Setting Up Autocomplete Fragment");
         if(!Places.isInitialized()){
             Places.initialize(getApplicationContext(),getString(R.string.google_maps_api_key));
         }
@@ -301,30 +319,38 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         mAutocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                Log.w(TAG, "Place:"+place);
-                try {
+                mPlace = new PlaceInfo();
+                Log.w(TAG, "Place Selected:" + place);
+                if(place.getId() != null){
                     mPlace.setID(place.getId());
+                }
+                if(place.getAddress() != null){
                     mPlace.setAddres(place.getAddress());
+                }
+                if(place.getLatLng() != null){
                     mPlace.setLatLng(place.getLatLng());
+                }
+                if(place.getName() != null){
                     mPlace.setName(place.getName());
+                }
+                if(place.getOpeningHours() != null){
                     mPlace.setOpeningHours(place.getOpeningHours());
+                }
+                if(place.getPhoneNumber() != null){
                     mPlace.setPhoneNumber(place.getPhoneNumber());
-                    if (place.getRating() != null) {
-                        mPlace.setRating(place.getRating());
-                    }
-                    if (place.getPhotoMetadatas().size() > 0) {
-                        mPlace.setPhotoMetadata(place.getPhotoMetadatas().get(0));
-                    }else{
-                        mPlace.setPhotoMetadata(null);
-                    }
-                }catch (NullPointerException e){
-                    Log.d(TAG,e.getMessage());
+                }
+                if (place.getRating() != null) {
+                    mPlace.setRating(place.getRating());
+                }
+                if (place.getPhotoMetadatas() != null && place.getPhotoMetadatas().size() > 0) {
+                    mPlace.setPhotoMetadata(place.getPhotoMetadatas().get(0));
                 }
                 geoLocate(mPlace);
             }
             @Override
             public void onError(@NonNull Status status) {
-                Log.e(TAG, "AutocompleteSupportFragment - Ocorreu um erro: " + status);
+                Log.d(TAG, "onError: Error on Autocomplete Select: " + status.toString());
+                Log.d(TAG, "onError: Going to actual Location");
                 getDeviceLocation();
             }
         });
@@ -333,15 +359,19 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     //Geolocate the place
     private void geoLocate(PlaceInfo place){
         Log.d(TAG, "geoLocate: Searching" + place);
-        Geocoder geocoder = new Geocoder(MapActivity.this);
-        if(place != null && place.getLatLng() != null) {
-            moveCamera(new LatLng(place.getLatLng().latitude, place.getLatLng().longitude), DEFAULT_ZOOM, place);
+        if(place.getLatLng() != null) {
+            Log.d(TAG, "geoLocate: Moving to Location");
+            moveCamera(new LatLng(place.getLatLng().latitude, place.getLatLng().longitude), place);
+        }else{
+            Log.d(TAG, "geoLocate: No Latitude or Longitude, going to actual location");
+            getDeviceLocation();
         }
     }
 
     //Move camera to the correct place
     private void moveCamera(LatLng latLng, float zoom, String title){
         Log.d(TAG, "Moving the camera");
+        mMap.clear();
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         if(!title.equals("My Location")) {
             MarkerOptions options = new MarkerOptions()
@@ -351,35 +381,29 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         }
         hideSoftKeyboard();
     }
-    private void moveCamera(LatLng latLng, float zoom, PlaceInfo placeInfo){
-        Log.d(TAG, "Moving the camera NOT MYSELF");
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-        mMap.clear();
-        final String attributions = placeInfo.getPhotoMetadata().getAttributions();
-        final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(placeInfo.getPhotoMetadata())
-                .setMaxHeight(800)
-                .setMaxWidth(600)
-                .build();
+    private void moveCamera(LatLng latLng, PlaceInfo placeInfo){
+        Log.d(TAG, "Moving the camera on a give Place");
         PlacesClient placesClient = Places.createClient(this);
-        placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoRespone) -> {
-            Bitmap bitmap = fetchPhotoRespone.getBitmap();
-            mMap.setInfoWindowAdapter(new CustomWindowAdapter(MapActivity.this,bitmap));
-        }).addOnFailureListener((exception)->{
-            final ApiException apiException = (ApiException) exception;
-            Log.d(TAG, "renderWindowText: " + exception.getMessage());
-            final int statusCode = apiException.getStatusCode();
-        });
-
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, MapActivity.DEFAULT_ZOOM));
+        mMap.clear();
         try{
-            Log.d(TAG, "Ass");
+            Log.d(TAG, "Building Information String");
             StringBuilder sb = new StringBuilder();
-            String snippet = "Address: " + placeInfo.getAddres() + "\n" +
-                    "Phone Number: " + placeInfo.getPhoneNumber() + "\n" +
-                    "Rating: " + placeInfo.getRating() + '\n';
+            String snippet = "Address: " + placeInfo.getAddres() + "\n";
             sb.append(snippet);
+            if(placeInfo.getRating() == 0.0){
+                sb.append("This place has no rating!").append("\n");
+            }else{
+                sb.append("Place Rating:").append(placeInfo.getRating()).append("\n");
+            }
+            if(placeInfo.getPhoneNumber() == null){
+                sb.append("This place has no phone number!").append("\n");
+            }else{
+                sb.append("Phone Number: ").append(placeInfo.getPhoneNumber()).append("\n");
+            }
             if(placeInfo.getOpeningHours() == null){
-                sb.append("This place has no opening hours!");
+                sb.append("This place has no opening hours!").append("\n");
             }else{
                 sb.append("Opening Hours: " + '\n');
                 for (String s : placeInfo.getOpeningHours().getWeekdayText()
@@ -387,13 +411,41 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                     sb.append(s).append('\n');
                 }
             }
-            MarkerOptions options = new MarkerOptions()
-                    .position(latLng)
-                    .title(placeInfo.getName())
-                    .snippet(sb.toString());
-            mMarker = mMap.addMarker(options);
-            mMap.addMarker(options);
-            Log.d(TAG, "ADDED MARKER");
+            if(placeInfo.getPhotoMetadata() !=null ) {
+                final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(placeInfo.getPhotoMetadata())
+                        .setMaxHeight(800)
+                        .setMaxWidth(600)
+                        .build();
+                placesClient.fetchPhoto(photoRequest).addOnSuccessListener(new OnSuccessListener<FetchPhotoResponse>() {
+                    @Override
+                    public void onSuccess(FetchPhotoResponse fetchPhotoResponse) {
+                        Log.d(TAG, "onFailure: Bitmap available");
+                        MarkerOptions options = new MarkerOptions()
+                                .position(latLng)
+                                .title(placeInfo.getName())
+                                .snippet(sb.toString());
+                        mMarker = mMap.addMarker(options);
+                        mMap.addMarker(options);
+                        Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                        mMap.setInfoWindowAdapter(new CustomWindowAdapter(MapActivity.this, bitmap));
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "onFailure: Failed to fetch photo Metadata");
+                    }
+                });
+            }else{
+                Log.d(TAG, "onFailure: No Bitmap available");
+                MarkerOptions options = new MarkerOptions()
+                        .position(latLng)
+                        .title(placeInfo.getName())
+                        .snippet(sb.toString());
+                mMarker = mMap.addMarker(options);
+                mMap.addMarker(options);
+                mMap.setInfoWindowAdapter(new CustomWindowAdapter(MapActivity.this, null));
+            }
+            Log.d(TAG, "Marker Ready");
         }catch (NullPointerException e){
             Log.d(TAG, e.getMessage());
         }
@@ -427,7 +479,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                     LatLng latLng = new LatLng(latitude, longitude);
                     Geocoder geocoder = new Geocoder(this);
                     List<Address> addressList = new ArrayList<>();
-
                     try {
                         addressList = geocoder.getFromLocation(latitude, longitude, 1);
 
@@ -437,6 +488,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                     if(addressList.size() > 0) {
                         Log.d(TAG, "GeoLocated location is: " + addressList.get(0).getAddressLine(0));
                         moveCamera(latLng, RANDOM_DEFAULT_ZOOM, "Random Place Generated: " + addressList.get(0).getAddressLine(0));
+                        mPlace = new PlaceInfo();
                         mPlace.setName(addressList.get(0).getCountryName());
                         mPlace.setLatLng(latLng);
                         mPlace.setAddres(addressList.get(0).getAddressLine(0));

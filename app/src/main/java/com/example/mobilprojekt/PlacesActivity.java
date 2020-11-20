@@ -30,7 +30,6 @@ import java.util.Objects;
 
 public class PlacesActivity extends AppCompatActivity {
 
-    private TextView textView;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final String TAG = "PlacesActivity";
     private static final String KEY_EMAIL = "email";
@@ -43,7 +42,24 @@ public class PlacesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_places);
         signInAccount = GoogleSignIn.getLastSignedInAccount(this);
-        textView = (TextView)findViewById(R.id.textView);
+
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+        decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int i) {
+                if((i & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                    decorView.setSystemUiVisibility(uiOptions);
+                }
+            }
+        });
+
         if (isServicesOK()) {
             init();
         }
@@ -73,8 +89,6 @@ public class PlacesActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if(documentSnapshot.exists()){
                             User user = documentSnapshot.toObject(User.class);
-                            assert user != null;
-                            textView.setText(user.getEmail());
                         }else{
                             Toast.makeText(PlacesActivity.this, "Document does not exist!", Toast.LENGTH_SHORT).show();
                         }
@@ -87,7 +101,7 @@ public class PlacesActivity extends AppCompatActivity {
         });
     }
 
-    public void deletePlaces(View view) {
+    public void clearList(View view) {
         noteref.delete();
     }
 }

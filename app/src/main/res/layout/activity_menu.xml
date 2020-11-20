@@ -1,66 +1,270 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MenuActivity">
+    android:background="#162122"
+    tools:context=".MenuActivity"
+    android:orientation="vertical">
 
-    <Button
-        android:id="@+id/button2"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:padding="10dp"
+        android:background="@drawable/topback">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            app:civ_border_width="2dp"
+            app:civ_border_color="#FF000000"/>
+
+
+        <TextView
+            android:id="@+id/welcome"
+            android:layout_width="wrap_content"
+            android:fontFamily="@font/sourcesanspro"
+            android:layout_height="wrap_content"
+            android:text="@string/welcome"
+            android:textSize="30sp"
+            android:textColor="@color/quantum_white_100"
+            android:layout_marginTop="10dp"
+            android:layout_toEndOf="@id/profile_image"
+            android:includeFontPadding="false"
+            android:layout_marginStart="10dp"/>
+
+        <TextView
+            android:id="@+id/profile_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/quantum_white_100"
+            android:text=""
+            android:fontFamily="@font/sourcesanspro"
+            android:textSize="25sp"
+            android:layout_marginTop="0dp"
+            android:layout_toEndOf="@id/profile_image"
+            android:layout_below="@id/welcome"
+            android:layout_marginStart="10dp"/>
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="#162122"
+        >
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="125dp"
+            android:layout_weight="1"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="#7e8b80"
+            app:cardElevation="10dp"
+            >
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gmaps"
+                >
+                
+                <ImageView
+                    android:id="@+id/go_to_map_Image_View"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/oldmap"
+                    android:layout_centerHorizontal="true">
+                </ImageView>
+
+                <TextView
+                    android:id="@+id/explore_map_Text_View"
+                    android:layout_width="wrap_content"
+                    android:fontFamily="@font/sourcesanspro"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/quantum_white_100"
+                    android:text="@string/explore_google_maps"
+                    android:textSize="20sp"
+                    android:layout_centerInParent="true"
+                    android:includeFontPadding="false" />
+                <Button
+                    android:id="@+id/mapButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sourcesanspro"
+                    android:layout_below="@id/explore_map_Text_View"
+                    android:layout_centerHorizontal="true"
+                    android:onClick="goToMap"
+                    android:text="@string/map"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                     />
+
+            </RelativeLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#162122"
+        android:padding="10dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="125dp"
+            android:layout_weight="1"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="#7e8b80"
+            app:cardElevation="10dp"
+            >
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/places">
+
+                <ImageView
+                    android:id="@+id/go_to_places_Image_View"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/mapsnew"
+                    android:layout_centerHorizontal="true">
+                </ImageView>
+
+                <TextView
+                    android:id="@+id/explore_places_Text_View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/quantum_white_100"
+                    android:text="@string/explore_your_places"
+                    android:textSize="20sp"
+                    android:layout_centerInParent="true"
+                    android:fontFamily="@font/sourcesanspro"
+                    android:includeFontPadding="false" />
+                <Button
+                    android:id="@+id/placesButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/explore_places_Text_View"
+                    android:onClick="goToSavedPlaces"
+                    android:fontFamily="@font/sourcesanspro"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/places"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                     />
+
+            </RelativeLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#162122"
+        android:padding="20dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro"
+            android:hint="@string/email"
+            android:focusable="false"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/email_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sourcesanspro"
+                android:text=""
+                android:drawableLeft="@drawable/ic_email"
+                android:drawablePadding="10sp"
+                android:inputType="none"
+                >
+
+            </com.google.android.material.textfield.TextInputEditText>
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#162122"
+        android:padding="20dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro"
+            android:hint="@string/token"
+            android:focusable="false"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/token_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:fontFamily="@font/sourcesanspro"
+                android:text=""
+                android:drawableLeft="@drawable/ic_token"
+                android:drawablePadding="10sp">
+
+            </com.google.android.material.textfield.TextInputEditText>
+
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="159dp"
-        android:layout_marginTop="252dp"
-        android:layout_marginEnd="159dp"
-        android:layout_marginBottom="431dp"
-        android:onClick="logOutUser"
-        android:text="Log Out"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:background="#287132"
+        >
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:textSize="16sp"
+            android:onClick="logOutUser"
+            android:text="@string/log_out"
+            android:textColor="#fff"
+            android:backgroundTint="@null"
+            android:fontFamily="@font/sourcesanspro"
+            android:background="#fff"
+             />
+        <ImageView
+            android:layout_width="40dp"
+            android:background="#6B6B6B"
+            android:layout_height="match_parent"
+            android:src="@drawable/glogo"
+            >
 
-    <TextView
-        android:id="@+id/googleName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="174dp"
-        android:layout_marginTop="71dp"
-        android:layout_marginEnd="179dp"
-        android:layout_marginBottom="162dp"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        </ImageView>
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="159dp"
-        android:layout_marginTop="101dp"
-        android:layout_marginEnd="135dp"
-        android:layout_marginBottom="281dp"
-        android:onClick="goToMap"
-        android:text="Go To Map"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2" />
 
-    <Button
-        android:id="@+id/placesButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="170dp"
-        android:layout_marginTop="59dp"
-        android:layout_marginEnd="148dp"
-        android:layout_marginBottom="174dp"
-        android:onClick="goToSavedPlaces"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button3" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

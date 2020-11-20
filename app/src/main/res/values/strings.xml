@@ -4,4 +4,13 @@
     <string name="fb_login_protocol_scheme">fb974712713055625</string>
     <string name="google_maps_api_key">AIzaSyAOwoLMEDr33Ap6MZLLyiBtnUiJ7rh0isc</string>
     <string name="enter_address_city_or_zip_code">Enter Address, City or Zip Code</string>
+    <string name="explore_google_maps">Explore Google Maps</string>
+    <string name="places">Places</string>
+    <string name="email">Email</string>
+    <string name="map">Map</string>
+    <string name="welcome">Welcome!</string>
+    <string name="token">Token</string>
+    <string name="explore_your_places">Explore your Places</string>
+    <string name="log_out">Log Out</string>
+    <string name="clear_places">Clear Places</string>
 </resources>

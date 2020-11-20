@@ -51,11 +51,13 @@ public class CustomWindowAdapter implements GoogleMap.InfoWindowAdapter {
     private void renderWindowText(Marker marker, View view) {
         String title = marker.getTitle();
         TextView tvTitle = (TextView) view.findViewById(R.id.title);
+        tvTitle.setText("");
         if (!title.equals("")) {
             tvTitle.setText(title);
         }
         String snippet = marker.getSnippet();
         TextView tvSnippet = (TextView) view.findViewById(R.id.snippet);
+        tvSnippet.setText("");
         if (!snippet.equals("")) {
             tvSnippet.setText(snippet);
         }
