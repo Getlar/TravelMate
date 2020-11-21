@@ -102,6 +102,9 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     private ImageView mAdd;
     private ImageView mBack;
 
+    private double sessionLongitude;
+    private double sessionLatitude;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +128,8 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                 }
             }
         });
-
+        sessionLatitude = getIntent().getDoubleExtra("latitude", 0);
+        sessionLongitude = getIntent().getDoubleExtra("longitude", 0);
         //Instantiate Widgets
         mGPS = (ImageView) findViewById(R.id.ic_gps);
         mInfo = (ImageView) findViewById(R.id.place_info);
@@ -204,6 +208,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                     mMap.getUiSettings().setMyLocationButtonEnabled(false);
                     mMap.getUiSettings().setZoomControlsEnabled(true);
                 }
+
             }
         });
         //Set up Widget Listeners for Events
@@ -256,36 +261,58 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                 Log.d(TAG, "onClick: Going back to Main Menu");
                 Toast.makeText(MapActivity.this, "Going Back To Main Menu", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MapActivity.this, MenuActivity.class);
+                intent.putExtra("ISLOGIN", 0);
                 startActivity(intent);
             }
         });
         Log.d(TAG, "initMap: InitMap Complete");
         //Setup Search Environment
+
         setUpAutocomplete();
     }
 
     private void getDeviceLocation(){
         Log.d(TAG, "getDeviceLocation(): Getting actual location of device");
-        FusedLocationProviderClient mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        try{
-            if(mLocationPermissionsGranted){
-                Task location = mFusedLocationProviderClient.getLastLocation();
-                location.addOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if(task.isSuccessful()){
-                            Log.d(TAG, "Found Location");
-                            Location currentLocation = (Location) task.getResult();
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),DEFAULT_ZOOM, "My Location");
-                        }else{
-                            Log.d(TAG, "Location is null");
-                            Toast.makeText(MapActivity.this, "Unable to get location",Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+
+        if (sessionLongitude != 0 && sessionLongitude != 0) {
+            LatLng latLng = new LatLng(sessionLatitude, sessionLongitude);
+            Geocoder geocoder = new Geocoder(getApplicationContext());
+            List<Address> addressList = new ArrayList<>();
+            try {
+                addressList = geocoder.getFromLocation(sessionLatitude, sessionLongitude, 1);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }catch (SecurityException e){
-            Log.d(TAG, "Security Exception" + e.getMessage());
+            if (addressList.size() > 0) {
+                Log.d(TAG, "GeoLocated location is: " + addressList.get(0).getAddressLine(0));
+                moveCamera(latLng, 15f, "Your Place: " + addressList.get(0).getAddressLine(0));
+                mPlace = new PlaceInfo();
+                mPlace.setName(addressList.get(0).getCountryName());
+                mPlace.setLatLng(latLng);
+                mPlace.setAddress(addressList.get(0).getAddressLine(0));
+            }
+        }else {
+            FusedLocationProviderClient mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+            try {
+                if (mLocationPermissionsGranted) {
+                    Task location = mFusedLocationProviderClient.getLastLocation();
+                    location.addOnCompleteListener(new OnCompleteListener() {
+                        @Override
+                        public void onComplete(@NonNull Task task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "Found Location");
+                                Location currentLocation = (Location) task.getResult();
+                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                            } else {
+                                Log.d(TAG, "Location is null");
+                                Toast.makeText(MapActivity.this, "Unable to get location", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            } catch (SecurityException e) {
+                Log.d(TAG, "Security Exception" + e.getMessage());
+            }
         }
     }
 
@@ -325,7 +352,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                     mPlace.setID(place.getId());
                 }
                 if(place.getAddress() != null){
-                    mPlace.setAddres(place.getAddress());
+                    mPlace.setAddress(place.getAddress());
                 }
                 if(place.getLatLng() != null){
                     mPlace.setLatLng(place.getLatLng());
@@ -354,6 +381,8 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                 getDeviceLocation();
             }
         });
+
+
     }
 
     //Geolocate the place
@@ -371,6 +400,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     //Move camera to the correct place
     private void moveCamera(LatLng latLng, float zoom, String title){
         Log.d(TAG, "Moving the camera");
+        Log.d(TAG, "moveCamera: " + title);
         mMap.clear();
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         if(!title.equals("My Location")) {
@@ -378,6 +408,8 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                     .position(latLng)
                     .title(title);
             mMap.addMarker(options);
+            sessionLongitude = 0;
+            sessionLatitude = 0;
         }
         hideSoftKeyboard();
     }
@@ -390,7 +422,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         try{
             Log.d(TAG, "Building Information String");
             StringBuilder sb = new StringBuilder();
-            String snippet = "Address: " + placeInfo.getAddres() + "\n";
+            String snippet = "Address: " + placeInfo.getAddress() + "\n";
             sb.append(snippet);
             if(placeInfo.getRating() == 0.0){
                 sb.append("This place has no rating!").append("\n");
@@ -491,7 +523,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                         mPlace = new PlaceInfo();
                         mPlace.setName(addressList.get(0).getCountryName());
                         mPlace.setLatLng(latLng);
-                        mPlace.setAddres(addressList.get(0).getAddressLine(0));
+                        mPlace.setAddress(addressList.get(0).getAddressLine(0));
                     }
                 }
             }

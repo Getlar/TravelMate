@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_height="140dp"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#162122"
+    android:padding="10dp">
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_weight="1"
+        android:layout_margin="10dp"
+        app:cardBackgroundColor="#7e8b80"
+        app:cardElevation="20dp">
+
+        <RelativeLayout
+            android:id="@+id/relLayoutMenu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/gmapsay">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/place_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                app:civ_border_width="3dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="5dp"
+                android:src="@drawable/earth"
+                app:civ_border_color="#FF000000"/>
+
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:fontFamily="@font/sourcesanspro"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text=""
+                android:textSize="20sp"
+                android:textColor="@color/quantum_black_100"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@id/place_image"
+                android:includeFontPadding="false"
+                />
+
+
+            <TextView
+                android:id="@+id/address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/quantum_black_100"
+                android:text=""
+                android:fontFamily="@font/sourcesanspro"
+                android:textSize="12sp"
+                android:layout_marginTop="0dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="100dp"
+                android:layout_toEndOf="@id/place_image"
+                android:layout_below="@id/name" />
+
+            <ImageView
+                android:id="@+id/go_to_places_Image_View"
+                android:layout_marginTop="10dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/mapsnew"
+                android:layout_marginStart="80dp"
+                android:layout_marginEnd="35dp"
+                android:layout_centerHorizontal="true">
+            </ImageView>
+
+            <Button
+                android:id="@+id/mapButton"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:fontFamily="@font/sourcesanspro"
+                android:layout_below="@id/go_to_places_Image_View"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
+                android:layout_centerHorizontal="true"
+                android:onClick="checkOutOnMaps"
+                android:text="@string/view"
+                />
+
+        </RelativeLayout>
+
+
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+
+</LinearLayout>

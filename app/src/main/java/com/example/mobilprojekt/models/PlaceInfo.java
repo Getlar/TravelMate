@@ -1,12 +1,14 @@
 package com.example.mobilprojekt.models;
 
+import android.graphics.Bitmap;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.model.OpeningHours;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 
 public class PlaceInfo {
     private String name;
-    private String addres;
+    private String address;
     private String ID;
     private LatLng latLng;
     private String phoneNumber;
@@ -14,9 +16,9 @@ public class PlaceInfo {
     private OpeningHours openingHours;
     private PhotoMetadata photoMetadata;
 
-    public PlaceInfo(String name, String addres, String ID, LatLng latLng, String phoneNumber, double rating, OpeningHours openingHours, PhotoMetadata photoMetadata) {
+    public PlaceInfo(String name, String address, String ID, LatLng latLng, String phoneNumber, double rating, OpeningHours openingHours, PhotoMetadata photoMetadata) {
         this.name = name;
-        this.addres = addres;
+        this.address = address;
         this.ID = ID;
         this.latLng = latLng;
         this.phoneNumber = phoneNumber;
@@ -24,6 +26,7 @@ public class PlaceInfo {
         this.openingHours = openingHours;
         this.photoMetadata = photoMetadata;
     }
+
 
     public PlaceInfo() {
     }
@@ -36,12 +39,12 @@ public class PlaceInfo {
         this.name = name;
     }
 
-    public String getAddres() {
-        return addres;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAddres(String addres) {
-        this.addres = addres;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getID() {
@@ -85,7 +88,7 @@ public class PlaceInfo {
     }
 
     public PhotoMetadata getPhotoMetadata() {
-        return photoMetadata;
+       return photoMetadata;
     }
 
     public void setPhotoMetadata(PhotoMetadata photoMetadata) {
@@ -96,7 +99,7 @@ public class PlaceInfo {
     public String toString() {
         return "PlaceInfo{" +
                 "name='" + name + '\'' +
-                ", addres=" + addres +
+                ", addres=" + address +
                 ", ID='" + ID + '\'' +
                 ", latLng=" + latLng +
                 ", phoneNumber='" + phoneNumber + '\'' +

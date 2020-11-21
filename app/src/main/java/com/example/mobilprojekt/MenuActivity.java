@@ -56,6 +56,7 @@ public class MenuActivity extends AppCompatActivity {
 
     //Google Account
     private GoogleSignInAccount signInAccount;
+    private int SESSION_VALUE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,7 @@ public class MenuActivity extends AppCompatActivity {
         tokenEditText = (TextInputEditText) findViewById(R.id.token_edit_text);
 
         //Getting Google Account information
+        SESSION_VALUE = getIntent().getIntExtra("ISLOGIN",1);
         signInAccount = GoogleSignIn.getLastSignedInAccount(this);
         if (isServicesOK()){
             init();
@@ -120,7 +122,9 @@ public class MenuActivity extends AppCompatActivity {
         db.collection("Users").document(Objects.requireNonNull(signInAccount.getEmail())).set(loggedInUser).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(getApplicationContext(), "User " + signInAccount.getDisplayName() +" logged in!", Toast.LENGTH_SHORT).show();
+                if(SESSION_VALUE != 0) {
+                    Toast.makeText(getApplicationContext(), "User " + signInAccount.getDisplayName() + " logged in!", Toast.LENGTH_SHORT).show();
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
